@@ -1,5 +1,7 @@
 # Task - task management server
 
+**This project is very old, (mostly) badly, and (also mostly) not maintained anymore.**
+
 Based mainly on Java and Spring technologies.
 
 ## Run
