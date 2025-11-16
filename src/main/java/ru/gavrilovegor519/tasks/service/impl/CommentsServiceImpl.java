@@ -27,7 +27,7 @@ public class CommentsServiceImpl implements CommentsService {
 
     @Override
     @Transactional
-    public void create(Comments comment, Long taskId, String email) {
+    public Comments create(Comments comment, Long taskId, String email) {
         User author = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("Author not found."));
 
@@ -37,12 +37,12 @@ public class CommentsServiceImpl implements CommentsService {
         comment.setAuthor(author);
         comment.setTask(task);
 
-        commentsRepository.save(comment);
+        return commentsRepository.save(comment);
     }
 
     @Override
     @Transactional
-    public void edit(Long id, Comments changes, String email) {
+    public Comments edit(Long id, Comments changes, String email) {
         User author = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("User not found!"));
 
@@ -53,6 +53,7 @@ public class CommentsServiceImpl implements CommentsService {
             throw new ForbiddenChangesException("Changes of data must do only his author!");
         } else {
             comment.setText(changes.getText());
+            return commentsRepository.save(comment);
         }
     }
 
@@ -70,6 +71,7 @@ public class CommentsServiceImpl implements CommentsService {
         } else {
             Task task = comments.getTask();
             task.getComments().remove(comments);
+            commentsRepository.delete(comments);
         }
     }
 

@@ -57,7 +57,7 @@ public class TaskControllerIntegrationTest extends TestContainersConfig {
         mockMvc.perform(post("/api/1.0/tasks/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createTaskDto)))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         Task task = taskRepository.findAll().getFirst();
         assertNotNull(task);
@@ -77,9 +77,9 @@ public class TaskControllerIntegrationTest extends TestContainersConfig {
         Task task = createTask("Test Task", "Test Description", user, TaskPriority.LOW, TaskStatus.FINISHED, user2);
         mockMvc.perform(get("/api/1.0/tasks/get/" + task.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(task.getId()))
-                .andExpect(jsonPath("$.name").value("Test Task"))
-                .andExpect(jsonPath("$.description").value("Test Description"));
+                .andExpect(jsonPath("$.data.id").value(task.getId()))
+                .andExpect(jsonPath("$.data.name").value("Test Task"))
+                .andExpect(jsonPath("$.data.description").value("Test Description"));
     }
 
     @Test

@@ -25,7 +25,7 @@ public class User implements UserDetails {
     @Column(name = "email", unique = true, length = 50, nullable = false)
     private String email;
 
-    @Column(name = "password", length = 120, nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
     @Override

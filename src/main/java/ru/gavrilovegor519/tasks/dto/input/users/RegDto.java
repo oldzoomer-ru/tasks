@@ -14,7 +14,6 @@ public class RegDto {
     @Email(message = "Invalid email")
     private String email;
 
-    @Size(max = 32, min = 8, message = "The password must be between 8 and 32 characters")
     @NotEmpty(message = "Password can't be empty")
     private String password;
 }

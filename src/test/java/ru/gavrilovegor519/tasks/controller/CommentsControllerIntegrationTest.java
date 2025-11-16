@@ -67,7 +67,7 @@ public class CommentsControllerIntegrationTest extends TestContainersConfig {
         mockMvc.perform(post("/api/1.0/comments/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createCommentDto)))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         Comments comment = commentsRepository.findAll().getFirst();
         assertNotNull(comment);
@@ -88,8 +88,8 @@ public class CommentsControllerIntegrationTest extends TestContainersConfig {
                         .param("end", "10")
                         .param("email", "test@example.com"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].id").value(comment.getId()))
-                .andExpect(jsonPath("$.content[0].text").value("Test comment"));
+                .andExpect(jsonPath("$.data.content[0].id").value(comment.getId()))
+                .andExpect(jsonPath("$.data.content[0].text").value("Test comment"));
     }
 
     @Test
@@ -104,8 +104,8 @@ public class CommentsControllerIntegrationTest extends TestContainersConfig {
                         .param("end", "10")
                         .param("taskId", task.getId().toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].id").value(comment.getId()))
-                .andExpect(jsonPath("$.content[0].text").value("Test comment"));
+                .andExpect(jsonPath("$.data.content[0].id").value(comment.getId()))
+                .andExpect(jsonPath("$.data.content[0].text").value("Test comment"));
     }
 
     @Test
@@ -117,8 +117,8 @@ public class CommentsControllerIntegrationTest extends TestContainersConfig {
         Comments comment = createComment("Test comment", user, task);
         mockMvc.perform(get("/api/1.0/comments/get/" + comment.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(comment.getId()))
-                .andExpect(jsonPath("$.text").value("Test comment"));
+                .andExpect(jsonPath("$.data.id").value(comment.getId()))
+                .andExpect(jsonPath("$.data.text").value("Test comment"));
     }
 
     @Test

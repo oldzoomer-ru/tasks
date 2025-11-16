@@ -26,7 +26,8 @@ public class UserServiceImpl implements UserService {
         String email = user.getEmail();
         String password = user.getPassword();
 
-        User user1 = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found."));
+        User user1 = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found."));
 
         if (!passwordEncoder.matches(password, user1.getPassword())) {
             throw new IncorrectPasswordException("Incorrect password!");
@@ -44,6 +45,15 @@ public class UserServiceImpl implements UserService {
 
         if (emailIsExist) {
             throw new DuplicateUserException("Duplicate E-Mail.");
+        }
+
+        // Encode password before saving - ensure this is done properly
+        String rawPassword = user.getPassword();
+        if (rawPassword != null && !rawPassword.isEmpty()) {
+            String encodedPassword = passwordEncoder.encode(rawPassword);
+            user.setPassword(encodedPassword);
+        } else {
+            throw new IllegalArgumentException("Password cannot be null or empty");
         }
 
         userRepository.save(user);

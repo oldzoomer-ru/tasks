@@ -25,7 +25,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional
-    public void create(Task task, String email, String assignedEmail) {
+    public Task create(Task task, String email, String assignedEmail) {
         User author = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("Author not found."));
         User assignedUser = userRepository.findByEmail(assignedEmail)
@@ -34,7 +34,7 @@ public class TaskServiceImpl implements TaskService {
         task.setAuthor(author);
         task.setAssigned(assignedUser);
 
-        taskRepository.save(task);
+        return taskRepository.save(task);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional
-    public void editStatus(Long id, TaskStatus status, String email) {
+    public Task editStatus(Long id, TaskStatus status, String email) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException("Task not found."));
 
@@ -67,12 +67,13 @@ public class TaskServiceImpl implements TaskService {
             throw new ForbiddenChangesException("Changes of data must do only his author, or assigned user!");
         } else {
             task.setStatus(status);
+            return taskRepository.save(task);
         }
     }
 
     @Override
     @Transactional
-    public void editPriority(Long id, TaskPriority priority, String email) {
+    public Task editPriority(Long id, TaskPriority priority, String email) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException("Task not found."));
 
@@ -83,12 +84,13 @@ public class TaskServiceImpl implements TaskService {
             throw new ForbiddenChangesException("Changes of data must do only his author!");
         } else {
             task.setPriority(priority);
+            return taskRepository.save(task);
         }
     }
 
     @Override
     @Transactional
-    public void editNameAndDescription(
+    public Task editNameAndDescription(
             Long id, Task task, String email) {
         Task task1 = taskRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException("Task not found."));
@@ -101,12 +103,13 @@ public class TaskServiceImpl implements TaskService {
         } else {
             task1.setName(task.getName());
             task1.setDescription(task.getDescription());
+            return taskRepository.save(task1);
         }
     }
 
     @Override
     @Transactional
-    public void editAssignedUser(Long id, String assignedEmail, String email) {
+    public Task editAssignedUser(Long id, String assignedEmail, String email) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException("Task not found."));
 
@@ -120,6 +123,7 @@ public class TaskServiceImpl implements TaskService {
             throw new ForbiddenChangesException("Changes of data must do only his author!");
         } else {
             task.setAssigned(assignedUser);
+            return taskRepository.save(task);
         }
     }
 

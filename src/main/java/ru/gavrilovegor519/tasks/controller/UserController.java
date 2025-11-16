@@ -5,12 +5,15 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.gavrilovegor519.tasks.dto.input.users.LoginDto;
 import ru.gavrilovegor519.tasks.dto.input.users.RegDto;
+import ru.gavrilovegor519.tasks.dto.output.Response;
 import ru.gavrilovegor519.tasks.dto.output.users.TokenDto;
 import ru.gavrilovegor519.tasks.entity.User;
 import ru.gavrilovegor519.tasks.mapper.UserMapper;
@@ -31,10 +34,12 @@ public class UserController {
                         @ApiResponse(responseCode = "403",
                                 description = "User is not found or incorrect password")
                 })
-    public TokenDto login(@Parameter(description = "Login data", required = true)
+    public ResponseEntity<Response<TokenDto>> login(@Parameter(description = "Login data", required = true)
                             @RequestBody @Valid LoginDto loginDto) {
         User user = registrationDataInputMapper.map(loginDto);
-        return userService.login(user);
+        TokenDto tokenDto = userService.login(user);
+
+        return ResponseEntity.ok(new Response<>(tokenDto, "Login successful", true));
     }
 
     @PostMapping("/reg")
@@ -45,10 +50,13 @@ public class UserController {
                         @ApiResponse(responseCode = "409",
                                 description = "Duplicate registration data")
                 })
-    public void reg(@Parameter(description = "Registration data", required = true)
+    public ResponseEntity<Response<String>> reg(@Parameter(description = "Registration data", required = true)
                         @RequestBody @Valid RegDto regDto) {
         User user = registrationDataInputMapper.map(regDto);
         userService.reg(user);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new Response<>("User registered successfully", true));
     }
 
 }

@@ -41,7 +41,7 @@ public class UserControllerIntegrationTest extends TestContainersConfig {
         mockMvc.perform(post("/api/1.0/user/reg")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(regDto)))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         mockMvc.perform(post("/api/1.0/user/reg")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -55,14 +55,14 @@ public class UserControllerIntegrationTest extends TestContainersConfig {
         mockMvc.perform(post("/api/1.0/user/reg")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(regDto)))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         LoginDto loginDto = createLoginDto(regDto.getEmail(), regDto.getPassword());
         mockMvc.perform(post("/api/1.0/user/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginDto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token").exists());
+                .andExpect(jsonPath("$.data.token").exists());
     }
 
     private RegDto createRegDto(String email, String password) {
