@@ -21,6 +21,8 @@ import ru.gavrilovegor519.tasks.service.CommentsService;
 @AllArgsConstructor
 public class CommentsServiceImpl implements CommentsService {
 
+    private static final String COMMENT_NOT_FOUND = "Comment not found.";
+    private static final String USER_NOT_FOUND = "User not found!";
     private final UserRepository userRepository;
     private final CommentsRepository commentsRepository;
     private final TaskRepository taskRepository;
@@ -44,10 +46,10 @@ public class CommentsServiceImpl implements CommentsService {
     @Transactional
     public Comments edit(Long id, Comments changes, String email) {
         User author = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("User not found!"));
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND));
 
         Comments comment = commentsRepository.findById(id)
-                .orElseThrow(() -> new CommentNotFoundException("Comment not found."));
+                .orElseThrow(() -> new CommentNotFoundException(COMMENT_NOT_FOUND));
 
         if (!comment.getAuthor().getEmail().equals(author.getEmail())) {
             throw new ForbiddenChangesException("Changes of data must do only his author!");
@@ -61,10 +63,10 @@ public class CommentsServiceImpl implements CommentsService {
     @Transactional
     public void delete(Long id, String email) {
         Comments comments = commentsRepository.findById(id)
-                .orElseThrow(() -> new CommentNotFoundException("Comment not found."));
+                .orElseThrow(() -> new CommentNotFoundException(COMMENT_NOT_FOUND));
 
         User author = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("User not found!"));
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND));
 
         if (!comments.getAuthor().getEmail().equals(author.getEmail())) {
             throw new ForbiddenChangesException("Changes of data must do only his author!");
@@ -79,14 +81,14 @@ public class CommentsServiceImpl implements CommentsService {
     @Transactional(readOnly = true)
     public Comments getComment(Long id) {
         return commentsRepository.findById(id)
-                .orElseThrow(() -> new CommentNotFoundException("Comment not found."));
+                .orElseThrow(() -> new CommentNotFoundException(COMMENT_NOT_FOUND));
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<Comments> getMultipleCommentsForUser(String email, Pageable pageable) {
         User author = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("User not found!"));
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND));
 
         return commentsRepository.findAllByAuthor(author, pageable);
     }
