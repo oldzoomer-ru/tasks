@@ -1,6 +1,6 @@
 # Task - task management server
 
-**This project is very old, (mostly) badly, and (also mostly) not maintained anymore.**
+**This project is very old, and deprecated.**
 
 Based mainly on Java and Spring technologies.
 
