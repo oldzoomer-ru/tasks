@@ -4,12 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.gavrilovegor519.tasks.config.TestContainersConfig;
 import ru.gavrilovegor519.tasks.constant.TaskPriority;
 import ru.gavrilovegor519.tasks.constant.TaskStatus;
 import ru.gavrilovegor519.tasks.dto.input.comments.CreateCommentDto;
@@ -29,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class CommentsControllerIntegrationTest extends TestContainersConfig {
+class CommentsControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -56,9 +55,9 @@ class CommentsControllerIntegrationTest extends TestContainersConfig {
     @Test
     @WithMockUser(username = "test@example.com")
     void createComment_shouldCreateComment() throws Exception {
-        User user = createUser("test@example.com", "password");
-        User user2 = createUser("test2@example.com", "password");
-        Task task = createTask("Test Task", "Test Description", user, TaskPriority.LOW, TaskStatus.FINISHED, user2);
+        User user = createUser("test@example.com");
+        User user2 = createUser("test2@example.com");
+        Task task = createTask(user, user2);
 
         CreateCommentDto createCommentDto = new CreateCommentDto();
         createCommentDto.setTaskId(task.getId());
@@ -79,9 +78,9 @@ class CommentsControllerIntegrationTest extends TestContainersConfig {
     @Test
     @WithMockUser(username = "test@example.com")
     void getAllCommentsForUser_shouldReturnComments() throws Exception {
-        User user = createUser("test@example.com", "password");
-        User user2 = createUser("test2@example.com", "password");
-        Task task = createTask("Test Task", "Test Description", user, TaskPriority.LOW, TaskStatus.FINISHED, user2);
+        User user = createUser("test@example.com");
+        User user2 = createUser("test2@example.com");
+        Task task = createTask(user, user2);
         Comments comment = createComment("Test comment", user, task);
         mockMvc.perform(get("/api/1.0/comments/get/user")
                         .param("start", "0")
@@ -95,9 +94,9 @@ class CommentsControllerIntegrationTest extends TestContainersConfig {
     @Test
     @WithMockUser(username = "test@example.com")
     void getAllCommentsForTask_shouldReturnComments() throws Exception {
-        User user = createUser("test@example.com", "password");
-        User user2 = createUser("test2@example.com", "password");
-        Task task = createTask("Test Task", "Test Description", user, TaskPriority.LOW, TaskStatus.FINISHED, user2);
+        User user = createUser("test@example.com");
+        User user2 = createUser("test2@example.com");
+        Task task = createTask(user, user2);
         Comments comment = createComment("Test comment", user, task);
         mockMvc.perform(get("/api/1.0/comments/get/task")
                         .param("start", "0")
@@ -111,9 +110,9 @@ class CommentsControllerIntegrationTest extends TestContainersConfig {
     @Test
     @WithMockUser(username = "test@example.com")
     void getComment_shouldReturnComment() throws Exception {
-        User user = createUser("test@example.com", "password");
-        User user2 = createUser("test2@example.com", "password");
-        Task task = createTask("Test Task", "Test Description", user, TaskPriority.LOW, TaskStatus.FINISHED, user2);
+        User user = createUser("test@example.com");
+        User user2 = createUser("test2@example.com");
+        Task task = createTask(user, user2);
         Comments comment = createComment("Test comment", user, task);
         mockMvc.perform(get("/api/1.0/comments/get/" + comment.getId()))
                 .andExpect(status().isOk())
@@ -124,12 +123,12 @@ class CommentsControllerIntegrationTest extends TestContainersConfig {
     @Test
     @WithMockUser(username = "test@example.com")
     void editComment_shouldEditComment() throws Exception {
-        User user = createUser("test@example.com", "password");
-        User user2 = createUser("test2@example.com", "password");
-        Task task = createTask("Test Task", "Test Description", user, TaskPriority.LOW, TaskStatus.FINISHED, user2);
+        User user = createUser("test@example.com");
+        User user2 = createUser("test2@example.com");
+        Task task = createTask(user, user2);
         Comments comment = createComment("Original comment", user, task);
 
-        EditCommentDto editCommentDto = createEditCommentDto(comment.getId(), "Updated comment");
+        EditCommentDto editCommentDto = createEditCommentDto(comment.getId());
         mockMvc.perform(put("/api/1.0/comments/edit")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(editCommentDto)))
@@ -140,20 +139,19 @@ class CommentsControllerIntegrationTest extends TestContainersConfig {
         assertEquals("Updated comment", updatedComment.getText());
     }
 
-    private User createUser(String email, String password) {
+    private User createUser(String email) {
         User user = new User();
         user.setEmail(email);
-        user.setPassword(password);
         return userRepository.save(user);
     }
 
-    private Task createTask(String name, String description, User author, TaskPriority priority, TaskStatus status, User assigned) {
+    private Task createTask(User author, User assigned) {
         Task task = new Task();
-        task.setName(name);
-        task.setDescription(description);
+        task.setName("Test Task");
+        task.setDescription("Test Description");
         task.setAuthor(author);
-        task.setPriority(priority);
-        task.setStatus(status);
+        task.setPriority(TaskPriority.LOW);
+        task.setStatus(TaskStatus.FINISHED);
         task.setAssigned(assigned);
         return taskRepository.save(task);
     }
@@ -166,10 +164,10 @@ class CommentsControllerIntegrationTest extends TestContainersConfig {
         return commentsRepository.save(comment);
     }
 
-    private EditCommentDto createEditCommentDto(Long commentId, String text) {
+    private EditCommentDto createEditCommentDto(Long commentId) {
         EditCommentDto editCommentDto = new EditCommentDto();
         editCommentDto.setCommentId(commentId);
-        editCommentDto.setText(text);
+        editCommentDto.setText("Updated comment");
         return editCommentDto;
     }
 }

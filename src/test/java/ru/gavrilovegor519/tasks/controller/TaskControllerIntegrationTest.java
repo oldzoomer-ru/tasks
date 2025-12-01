@@ -4,12 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.gavrilovegor519.tasks.config.TestContainersConfig;
 import ru.gavrilovegor519.tasks.constant.TaskPriority;
 import ru.gavrilovegor519.tasks.constant.TaskStatus;
 import ru.gavrilovegor519.tasks.dto.input.tasks.CreateTaskDto;
@@ -27,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class TaskControllerIntegrationTest extends TestContainersConfig {
+class TaskControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -50,10 +49,10 @@ class TaskControllerIntegrationTest extends TestContainersConfig {
     @Test
     @WithMockUser(username = "test@example.com")
     void createTask_shouldCreateTask() throws Exception {
-        createUser("test@example.com", "password");
-        User user2 = createUser("test2@example.com", "password");
+        createUser("test@example.com");
+        User user2 = createUser("test2@example.com");
 
-        CreateTaskDto createTaskDto = createCreateTaskDto("Test Task", "Test Description", TaskPriority.LOW, TaskStatus.FINISHED, user2.getEmail());
+        CreateTaskDto createTaskDto = createCreateTaskDto(user2.getEmail());
         mockMvc.perform(post("/api/1.0/tasks/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createTaskDto)))
@@ -71,10 +70,10 @@ class TaskControllerIntegrationTest extends TestContainersConfig {
     @Test
     @WithMockUser(username = "test@example.com")
     void getTask_shouldReturnTask() throws Exception {
-        User user = createUser("test@example.com", "password");
-        User user2 = createUser("test2@example.com", "password");
+        User user = createUser("test@example.com");
+        User user2 = createUser("test2@example.com");
 
-        Task task = createTask("Test Task", "Test Description", user, TaskPriority.LOW, TaskStatus.FINISHED, user2);
+        Task task = createTask("Test Task", "Test Description", user, user2);
         mockMvc.perform(get("/api/1.0/tasks/get/" + task.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.id").value(task.getId()))
@@ -85,12 +84,12 @@ class TaskControllerIntegrationTest extends TestContainersConfig {
     @Test
     @WithMockUser(username = "test@example.com")
     void updateTask_shouldUpdateTask() throws Exception {
-        User user = createUser("test@example.com", "password");
-        User user2 = createUser("test2@example.com", "password");
+        User user = createUser("test@example.com");
+        User user2 = createUser("test2@example.com");
 
-        Task task = createTask("Original Task", "Original Description", user, TaskPriority.LOW, TaskStatus.FINISHED, user2);
+        Task task = createTask("Original Task", "Original Description", user, user2);
 
-        EditTaskDto editTaskDto = createEditTaskDto("Updated Task", "Updated Description");
+        EditTaskDto editTaskDto = createEditTaskDto();
         mockMvc.perform(put("/api/1.0/tasks/" + task.getId() + "/edit/description")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(editTaskDto)))
@@ -102,38 +101,37 @@ class TaskControllerIntegrationTest extends TestContainersConfig {
         assertEquals("Updated Description", updatedTask.getDescription());
     }
 
-    private User createUser(String email, String password) {
+    private User createUser(String email) {
         User user = new User();
         user.setEmail(email);
-        user.setPassword(password);
         return userRepository.save(user);
     }
 
-    private Task createTask(String name, String description, User author, TaskPriority priority, TaskStatus status, User assigned) {
+    private Task createTask(String name, String description, User author, User assigned) {
         Task task = new Task();
         task.setName(name);
         task.setDescription(description);
         task.setAuthor(author);
-        task.setPriority(priority);
-        task.setStatus(status);
+        task.setPriority(TaskPriority.LOW);
+        task.setStatus(TaskStatus.FINISHED);
         task.setAssigned(assigned);
         return taskRepository.save(task);
     }
 
-    private CreateTaskDto createCreateTaskDto(String name, String description, TaskPriority priority, TaskStatus status, String assignedEmail) {
+    private CreateTaskDto createCreateTaskDto(String assignedEmail) {
         CreateTaskDto createTaskDto = new CreateTaskDto();
-        createTaskDto.setName(name);
-        createTaskDto.setDescription(description);
-        createTaskDto.setPriority(priority);
-        createTaskDto.setStatus(status);
+        createTaskDto.setName("Test Task");
+        createTaskDto.setDescription("Test Description");
+        createTaskDto.setPriority(TaskPriority.LOW);
+        createTaskDto.setStatus(TaskStatus.FINISHED);
         createTaskDto.setAssignedEmail(assignedEmail);
         return createTaskDto;
     }
 
-    private EditTaskDto createEditTaskDto(String name, String description) {
+    private EditTaskDto createEditTaskDto() {
         EditTaskDto editTaskDto = new EditTaskDto();
-        editTaskDto.setName(name);
-        editTaskDto.setDescription(description);
+        editTaskDto.setName("Updated Task");
+        editTaskDto.setDescription("Updated Description");
         return editTaskDto;
     }
 }
