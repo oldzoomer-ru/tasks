@@ -14,31 +14,23 @@ public class CustomExceptionResolver {
 
     @ExceptionHandler({CommentNotFoundException.class,
             PaginationOutOfRangeException.class, TaskNotFoundException.class, UserNotFoundException.class})
-    public ResponseEntity<Response> badRequestHandler(Throwable e) {
+    public ResponseEntity<Response<Object>> badRequestHandler(Throwable e) {
         log.error(e.getMessage());
-        Response response = new Response(e.getMessage(), false);
+        Response<Object> response = new Response<>(e.getMessage(), false);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(DuplicateUserException.class)
-    public ResponseEntity<Response> conflictHandler(Throwable e) {
+    @ExceptionHandler({ForbiddenChangesException.class})
+    public ResponseEntity<Response<Object>> forbiddenHandler(Throwable e) {
         log.error(e.getMessage());
-        Response response = new Response(e.getMessage(), false);
-        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
-    }
-
-    @ExceptionHandler({ForbiddenChangesException.class,
-            IncorrectPasswordException.class})
-    public ResponseEntity<Response> forbiddenHandler(Throwable e) {
-        log.error(e.getMessage());
-        Response response = new Response(e.getMessage(), false);
+        Response<Object> response = new Response<>(e.getMessage(), false);
         return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(Throwable.class)
-    public ResponseEntity<Response> otherHandler(Throwable e) {
+    public ResponseEntity<Response<Object>> otherHandler(Throwable e) {
         log.error("Unexpected error occurred", e);
-        Response response = new Response("An unexpected error occurred", false);
+        Response<Object> response = new Response<>("An unexpected error occurred", false);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
