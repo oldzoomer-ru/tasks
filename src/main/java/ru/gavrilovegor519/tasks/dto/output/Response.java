@@ -10,9 +10,6 @@ public class Response<T> {
     private String message;
     private boolean success;
 
-    public Response() {
-    }
-
     public Response(T data, String message, boolean success) {
         this.data = data;
         this.message = message;
