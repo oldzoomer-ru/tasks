@@ -1,6 +1,5 @@
 package ru.gavrilovegor519.tasks.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +16,7 @@ import ru.gavrilovegor519.tasks.entity.Task;
 import ru.gavrilovegor519.tasks.entity.User;
 import ru.gavrilovegor519.tasks.repo.TaskRepository;
 import ru.gavrilovegor519.tasks.repo.UserRepository;
+import tools.jackson.databind.ObjectMapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
