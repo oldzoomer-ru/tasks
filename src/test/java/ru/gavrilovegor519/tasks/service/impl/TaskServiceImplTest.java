@@ -8,8 +8,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import ru.gavrilovegor519.tasks.constant.TaskStatus;
 import ru.gavrilovegor519.tasks.entity.Task;
 import ru.gavrilovegor519.tasks.exception.ForbiddenChangesException;
-import ru.gavrilovegor519.tasks.exception.TaskNotFoundException;
-import ru.gavrilovegor519.tasks.exception.UserNotFoundException;
 import ru.gavrilovegor519.tasks.repo.TaskRepository;
 
 import java.util.Optional;
@@ -29,7 +27,7 @@ class TaskServiceImplTest {
     private TaskServiceImpl taskService;
 
     @Test
-    void editStatusAsAuthor() throws UserNotFoundException, ForbiddenChangesException, TaskNotFoundException {
+    void editStatusAsAuthor() {
         Task task = mock(Task.class);
 
         when(task.getAuthorEmail()).thenReturn(AUTHOR_EMAIL);
@@ -41,7 +39,7 @@ class TaskServiceImplTest {
     }
 
     @Test
-    void editStatusAsAssigned() throws UserNotFoundException, ForbiddenChangesException, TaskNotFoundException {
+    void editStatusAsAssigned() {
         Task task = mock(Task.class);
 
         when(task.getAuthorEmail()).thenReturn(AUTHOR_EMAIL);
