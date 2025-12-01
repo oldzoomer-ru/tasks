@@ -7,12 +7,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.gavrilovegor519.tasks.constant.TaskStatus;
 import ru.gavrilovegor519.tasks.entity.Task;
-import ru.gavrilovegor519.tasks.entity.User;
 import ru.gavrilovegor519.tasks.exception.ForbiddenChangesException;
 import ru.gavrilovegor519.tasks.exception.TaskNotFoundException;
 import ru.gavrilovegor519.tasks.exception.UserNotFoundException;
 import ru.gavrilovegor519.tasks.repo.TaskRepository;
-import ru.gavrilovegor519.tasks.repo.UserRepository;
 
 import java.util.Optional;
 
@@ -21,9 +19,8 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TaskServiceImplTest {
-
-    @Mock
-    private UserRepository userRepository;
+    private static final String AUTHOR_EMAIL = "author@email.com";
+    private static final String ASSIGNED_EMAIL = "assigned@email.com";
 
     @Mock
     private TaskRepository taskRepository;
@@ -33,50 +30,35 @@ class TaskServiceImplTest {
 
     @Test
     void editStatusAsAuthor() throws UserNotFoundException, ForbiddenChangesException, TaskNotFoundException {
-        User user1 = mock(User.class);
         Task task = mock(Task.class);
 
-        when(user1.getEmail()).thenReturn("1@1.ru");
-        when(task.getAuthor()).thenReturn(user1);
-        when(userRepository.findByEmail("1@1.ru")).thenReturn(Optional.of(user1));
+        when(task.getAuthorEmail()).thenReturn(AUTHOR_EMAIL);
         when(taskRepository.findById(0L)).thenReturn(Optional.of(task));
 
-        taskService.editStatus(0L, TaskStatus.FINISHED, "1@1.ru");
+        taskService.editStatus(0L, TaskStatus.FINISHED, "author@email.com");
 
         verify(task).setStatus(TaskStatus.FINISHED);
     }
 
     @Test
     void editStatusAsAssigned() throws UserNotFoundException, ForbiddenChangesException, TaskNotFoundException {
-        User user1 = mock(User.class);
-        User user2 = mock(User.class);
         Task task = mock(Task.class);
 
-        when(user1.getEmail()).thenReturn("1@1.ru");
-        when(user2.getEmail()).thenReturn("2@1.ru");
-        when(task.getAuthor()).thenReturn(user1);
-        when(task.getAssigned()).thenReturn(user2);
-        when(userRepository.findByEmail("2@1.ru")).thenReturn(Optional.of(user2));
+        when(task.getAuthorEmail()).thenReturn(AUTHOR_EMAIL);
+        when(task.getAssignedEmail()).thenReturn(ASSIGNED_EMAIL);
         when(taskRepository.findById(0L)).thenReturn(Optional.of(task));
 
-        taskService.editStatus(0L, TaskStatus.FINISHED, "2@1.ru");
+        taskService.editStatus(0L, TaskStatus.FINISHED, "assigned@email.com");
 
         verify(task).setStatus(TaskStatus.FINISHED);
     }
 
     @Test
     void editStatusAsNotAuthorOrAssigned() {
-        User user1 = mock(User.class);
-        User user2 = mock(User.class);
-        User user3 = mock(User.class);
         Task task = mock(Task.class);
 
-        when(user1.getEmail()).thenReturn("1@1.ru");
-        when(user2.getEmail()).thenReturn("2@1.ru");
-        when(user3.getEmail()).thenReturn("3@1.ru");
-        when(task.getAuthor()).thenReturn(user1);
-        when(task.getAssigned()).thenReturn(user2);
-        when(userRepository.findByEmail("3@1.ru")).thenReturn(Optional.of(user3));
+        when(task.getAuthorEmail()).thenReturn(AUTHOR_EMAIL);
+        when(task.getAssignedEmail()).thenReturn(ASSIGNED_EMAIL);
         when(taskRepository.findById(0L)).thenReturn(Optional.of(task));
 
         assertThrows(ForbiddenChangesException.class,

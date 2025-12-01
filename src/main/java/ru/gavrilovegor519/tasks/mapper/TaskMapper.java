@@ -5,9 +5,7 @@ import org.mapstruct.ReportingPolicy;
 import ru.gavrilovegor519.tasks.dto.input.tasks.CreateTaskDto;
 import ru.gavrilovegor519.tasks.dto.input.tasks.EditTaskDto;
 import ru.gavrilovegor519.tasks.dto.output.tasks.TaskOutputDto;
-import ru.gavrilovegor519.tasks.dto.output.users.UserDto;
 import ru.gavrilovegor519.tasks.entity.Task;
-import ru.gavrilovegor519.tasks.entity.User;
 
 @Mapper(componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.IGNORE)
@@ -17,6 +15,4 @@ public interface TaskMapper {
     Task map(EditTaskDto dto);
 
     TaskOutputDto map(Task task);
-
-    UserDto map(User user);
 }

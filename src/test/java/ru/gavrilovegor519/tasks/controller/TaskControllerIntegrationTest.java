@@ -13,9 +13,7 @@ import ru.gavrilovegor519.tasks.constant.TaskStatus;
 import ru.gavrilovegor519.tasks.dto.input.tasks.CreateTaskDto;
 import ru.gavrilovegor519.tasks.dto.input.tasks.EditTaskDto;
 import ru.gavrilovegor519.tasks.entity.Task;
-import ru.gavrilovegor519.tasks.entity.User;
 import ru.gavrilovegor519.tasks.repo.TaskRepository;
-import ru.gavrilovegor519.tasks.repo.UserRepository;
 import tools.jackson.databind.ObjectMapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,24 +33,17 @@ class TaskControllerIntegrationTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private TaskRepository taskRepository;
 
     @AfterEach
     void tearDown() {
         taskRepository.deleteAll();
-        userRepository.deleteAll();
     }
 
     @Test
-    @WithMockUser(username = "test@example.com")
+    @WithMockUser(username = "author@email.com")
     void createTask_shouldCreateTask() throws Exception {
-        createUser("test@example.com");
-        User user2 = createUser("test2@example.com");
-
-        CreateTaskDto createTaskDto = createCreateTaskDto(user2.getEmail());
+        CreateTaskDto createTaskDto = createCreateTaskDto();
         mockMvc.perform(post("/api/1.0/tasks/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createTaskDto)))
@@ -64,16 +55,12 @@ class TaskControllerIntegrationTest {
         assertEquals("Test Description", task.getDescription());
         assertEquals(TaskPriority.LOW, task.getPriority());
         assertEquals(TaskStatus.FINISHED, task.getStatus());
-        assertEquals(user2.getId(), task.getAssigned().getId());
     }
 
     @Test
-    @WithMockUser(username = "test@example.com")
+    @WithMockUser(username = "author@email.com")
     void getTask_shouldReturnTask() throws Exception {
-        User user = createUser("test@example.com");
-        User user2 = createUser("test2@example.com");
-
-        Task task = createTask("Test Task", "Test Description", user, user2);
+        Task task = createTask("Test Task", "Test Description");
         mockMvc.perform(get("/api/1.0/tasks/get/" + task.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.id").value(task.getId()))
@@ -82,12 +69,9 @@ class TaskControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "test@example.com")
+    @WithMockUser(username = "author@email.com")
     void updateTask_shouldUpdateTask() throws Exception {
-        User user = createUser("test@example.com");
-        User user2 = createUser("test2@example.com");
-
-        Task task = createTask("Original Task", "Original Description", user, user2);
+        Task task = createTask("Original Task", "Original Description");
 
         EditTaskDto editTaskDto = createEditTaskDto();
         mockMvc.perform(put("/api/1.0/tasks/" + task.getId() + "/edit/description")
@@ -101,30 +85,24 @@ class TaskControllerIntegrationTest {
         assertEquals("Updated Description", updatedTask.getDescription());
     }
 
-    private User createUser(String email) {
-        User user = new User();
-        user.setEmail(email);
-        return userRepository.save(user);
-    }
-
-    private Task createTask(String name, String description, User author, User assigned) {
+    private Task createTask(String name, String description) {
         Task task = new Task();
         task.setName(name);
         task.setDescription(description);
-        task.setAuthor(author);
+        task.setAuthorEmail("author@email.com");
         task.setPriority(TaskPriority.LOW);
         task.setStatus(TaskStatus.FINISHED);
-        task.setAssigned(assigned);
+        task.setAssignedEmail("assigned@email.com");
         return taskRepository.save(task);
     }
 
-    private CreateTaskDto createCreateTaskDto(String assignedEmail) {
+    private CreateTaskDto createCreateTaskDto() {
         CreateTaskDto createTaskDto = new CreateTaskDto();
         createTaskDto.setName("Test Task");
         createTaskDto.setDescription("Test Description");
         createTaskDto.setPriority(TaskPriority.LOW);
         createTaskDto.setStatus(TaskStatus.FINISHED);
-        createTaskDto.setAssignedEmail(assignedEmail);
+        createTaskDto.setAssignedEmail("assigned@email.com");
         return createTaskDto;
     }
 

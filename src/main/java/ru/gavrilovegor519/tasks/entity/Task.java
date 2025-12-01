@@ -33,11 +33,11 @@ public class Task {
     @Column(name = "priority", nullable = false)
     private TaskPriority priority;
 
-    @ManyToOne
-    private User author;
+    @Column(name = "author_email", nullable = false)
+    private String authorEmail;
 
-    @ManyToOne
-    private User assigned;
+    @Column(name = "assigned_email")
+    private String assignedEmail;
 
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonBackReference

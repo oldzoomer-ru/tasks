@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import ru.gavrilovegor519.tasks.constant.TaskPriority;
 import ru.gavrilovegor519.tasks.constant.TaskStatus;
-import ru.gavrilovegor519.tasks.dto.output.users.UserDto;
 
 @Getter
 @Setter
@@ -19,7 +18,7 @@ public class TaskOutputDto {
 
     private TaskPriority priority;
 
-    private UserDto author;
+    private String authorEmail;
 
-    private UserDto assigned;
+    private String assignedEmail;
 }

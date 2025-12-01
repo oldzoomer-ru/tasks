@@ -17,8 +17,8 @@ public class Comments {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @ManyToOne
-    private User author;
+    @Column(name = "author_email", nullable = false)
+    private String authorEmail;
 
     @ManyToOne
     @JsonBackReference
