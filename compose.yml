@@ -5,10 +5,12 @@ services:
       context: .
     depends_on:
       - db
+      - keycloak
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/tasks
       - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
       - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+      - KEYCLOAK_ISSUER_URL=http://keycloak:8080/auth/realms/tasks
     ports:
       - "8080:8080"
     networks:
@@ -23,6 +25,17 @@ services:
       - POSTGRES_DB=tasks
     volumes:
       - postgres:/data/postgres
+    networks:
+      - tasks
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    command: start-dev
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    ports:
+      - "8081:8080"
     networks:
       - tasks
 
