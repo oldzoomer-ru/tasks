@@ -1,8 +1,6 @@
 package ru.gavrilovegor519.tasks.service.impl;
 
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.gavrilovegor519.tasks.constant.TaskPriority;
@@ -12,6 +10,8 @@ import ru.gavrilovegor519.tasks.exception.ForbiddenChangesException;
 import ru.gavrilovegor519.tasks.exception.TaskNotFoundException;
 import ru.gavrilovegor519.tasks.repo.TaskRepository;
 import ru.gavrilovegor519.tasks.service.TaskService;
+
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -98,7 +98,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Task> getMultipleTasksForUser(String email, Pageable pageable) {
-        return taskRepository.findAllByAuthorEmail(email, pageable);
+    public List<Task> getMultipleTasksForUser(String email) {
+        return taskRepository.findAllByAuthorEmail(email);
     }
 }

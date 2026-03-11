@@ -1,10 +1,10 @@
 package ru.gavrilovegor519.tasks.service;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import ru.gavrilovegor519.tasks.constant.TaskPriority;
 import ru.gavrilovegor519.tasks.constant.TaskStatus;
 import ru.gavrilovegor519.tasks.entity.Task;
+
+import java.util.List;
 
 public interface TaskService {
     Task create(Task task, String email, String assignedEmail);
@@ -18,5 +18,6 @@ public interface TaskService {
 
     Task editAssignedUser(Long id, String assignedEmail, String email);
     Task getTask(Long id);
-    Page<Task> getMultipleTasksForUser(String email, Pageable pageable);
+
+    List<Task> getMultipleTasksForUser(String email);
 }

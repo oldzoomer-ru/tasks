@@ -5,9 +5,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,6 +17,8 @@ import ru.gavrilovegor519.tasks.entity.Task;
 import ru.gavrilovegor519.tasks.exception.PaginationOutOfRangeException;
 import ru.gavrilovegor519.tasks.mapper.TaskMapper;
 import ru.gavrilovegor519.tasks.service.TaskService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/1.0/tasks")
@@ -133,7 +132,7 @@ public class TaskController {
                     @ApiResponse(description = "List of tasks by user",
                             useReturnTypeSchema = true)
             })
-    public ResponseEntity<Response<Page<TaskOutputDto>>> getAllTasksForUser(@RequestParam @Parameter(description = "Start of the page", required = true)
+    public ResponseEntity<Response<List<TaskOutputDto>>> getAllTasksForUser(@RequestParam @Parameter(description = "Start of the page", required = true)
                                                                             int start,
                                                                             @RequestParam @Parameter(description = "End of the page", required = true)
                                                                             int end,
@@ -143,10 +142,9 @@ public class TaskController {
             throw new PaginationOutOfRangeException("Out of range!");
         }
 
-        Pageable pageable = PageRequest.of(start, end - start);
-        Page<Task> multipleTasksForUser = taskService.getMultipleTasksForUser(email, pageable);
+        List<Task> multipleTasksForUser = taskService.getMultipleTasksForUser(email);
 
-        Page<TaskOutputDto> taskOutputDtos = multipleTasksForUser.map(taskMapper::map);
+        List<TaskOutputDto> taskOutputDtos = multipleTasksForUser.stream().map(taskMapper::map).toList();
 
         return ResponseEntity.ok(new Response<>(taskOutputDtos, "Tasks retrieved successfully", true));
     }
