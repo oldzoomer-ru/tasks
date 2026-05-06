@@ -99,19 +99,10 @@ class TaskControllerIntegrationTest {
     }
 
     private CreateTaskDto createCreateTaskDto() {
-        CreateTaskDto createTaskDto = new CreateTaskDto();
-        createTaskDto.setName("Test Task");
-        createTaskDto.setDescription("Test Description");
-        createTaskDto.setPriority(TaskPriority.LOW);
-        createTaskDto.setStatus(TaskStatus.FINISHED);
-        createTaskDto.setAssignedEmail("assigned@email.com");
-        return createTaskDto;
+        return new CreateTaskDto("Test Task", "Test Description", TaskStatus.FINISHED, TaskPriority.LOW, "assigned@email.com");
     }
 
     private EditTaskDto createEditTaskDto() {
-        EditTaskDto editTaskDto = new EditTaskDto();
-        editTaskDto.setName("Updated Task");
-        editTaskDto.setDescription("Updated Description");
-        return editTaskDto;
+        return new EditTaskDto("Updated Task", "Updated Description");
     }
 }

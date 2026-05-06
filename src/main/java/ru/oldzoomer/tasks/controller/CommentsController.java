@@ -38,7 +38,7 @@ public class CommentsController {
         String authorEmail = authentication.getName();
         Comments comment1 = commentMapper.map(comment);
 
-        Comments createdComment = commentsService.create(comment1, comment.getTaskId(), authorEmail);
+        Comments createdComment = commentsService.create(comment1, comment.taskId(), authorEmail);
         CommentOutputDto commentOutputDto = commentMapper.map(createdComment);
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -53,7 +53,7 @@ public class CommentsController {
         String authorEmail = authentication.getName();
         Comments changes1 = commentMapper.map(changes);
 
-        Comments updatedComment = commentsService.edit(changes.getCommentId(), changes1, authorEmail);
+        Comments updatedComment = commentsService.edit(changes.commentId(), changes1, authorEmail);
         CommentOutputDto commentOutputDto = commentMapper.map(updatedComment);
 
         return ResponseEntity.ok(new Response<>(commentOutputDto, "Comment updated successfully", true));

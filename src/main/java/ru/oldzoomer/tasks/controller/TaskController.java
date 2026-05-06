@@ -37,7 +37,7 @@ public class TaskController {
         String authorEmail = authentication.getName();
         Task task1 = taskMapper.map(createTaskDto);
 
-        Task task = taskService.create(task1, authorEmail, createTaskDto.getAssignedEmail());
+        Task task = taskService.create(task1, authorEmail, createTaskDto.assignedEmail());
         TaskOutputDto taskOutputDto = taskMapper.map(task);
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -64,7 +64,7 @@ public class TaskController {
                                                               Authentication authentication) {
         String authorEmail = authentication.getName();
 
-        Task task = taskService.editStatus(id, editTaskStatusDto.getStatus(), authorEmail);
+        Task task = taskService.editStatus(id, editTaskStatusDto.status(), authorEmail);
         TaskOutputDto taskOutputDto = taskMapper.map(task);
 
         return ResponseEntity.ok(new Response<>(taskOutputDto, "Task status updated successfully", true));
@@ -78,7 +78,7 @@ public class TaskController {
                                                                 Authentication authentication) {
         String authorEmail = authentication.getName();
 
-        Task task = taskService.editPriority(id, editTaskPriorityDto.getPriority(), authorEmail);
+        Task task = taskService.editPriority(id, editTaskPriorityDto.priority(), authorEmail);
         TaskOutputDto taskOutputDto = taskMapper.map(task);
 
         return ResponseEntity.ok(new Response<>(taskOutputDto, "Task priority updated successfully", true));
@@ -107,7 +107,7 @@ public class TaskController {
                                                                     Authentication authentication) {
         String authorEmail = authentication.getName();
 
-        Task task = taskService.editAssignedUser(id, editTaskAssignedUserDto.getAssignedEmail(), authorEmail);
+        Task task = taskService.editAssignedUser(id, editTaskAssignedUserDto.assignedEmail(), authorEmail);
         TaskOutputDto taskOutputDto = taskMapper.map(task);
 
         return ResponseEntity.ok(new Response<>(taskOutputDto, "Task assigned user updated successfully", true));

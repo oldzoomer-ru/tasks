@@ -52,9 +52,7 @@ class CommentsControllerIntegrationTest {
     void createComment_shouldCreateComment() throws Exception {
         Task task = createTask();
 
-        CreateCommentDto createCommentDto = new CreateCommentDto();
-        createCommentDto.setTaskId(task.getId());
-        createCommentDto.setText("Test comment");
+        CreateCommentDto createCommentDto = new CreateCommentDto(task.getId(), "Test comment");
 
         mockMvc.perform(post("/api/1.0/comments/create")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -144,9 +142,6 @@ class CommentsControllerIntegrationTest {
     }
 
     private EditCommentDto createEditCommentDto(Long commentId) {
-        EditCommentDto editCommentDto = new EditCommentDto();
-        editCommentDto.setCommentId(commentId);
-        editCommentDto.setText("Updated comment");
-        return editCommentDto;
+        return new EditCommentDto(commentId, "Updated comment");
     }
 }
